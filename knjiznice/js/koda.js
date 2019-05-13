@@ -127,41 +127,169 @@ function kreirajEHRzaBolnika() {
   }
 }
 
-/*function getRecipes() {
-  $.ajax({
-    url: 'https://cors.io/?https://api.edamam.com/search?',
-    q: 'chicken',
-    app_id: 'cdf44dcd',
-    app_key: '16fcac1b229242e5ad960ae8841bca90',
-    from: 0,
-    to: 10,
-    //callories: '590-720',
-    success:function (res) {
-      console.log(res[0])
-    }
-  })
-}*/
+//funkcija za pridobivanje receptov
+function getRecipes(bmi) {
+    var piletina = new Object();
+    var svinjetina = new Object();
+    var govedina= new Object();
 
-function getRecipes() {
-  /*fetch('https://cors.io/?https://api.edamam.com/search?q=chicken$callback')
-      .then(resp =>resp.json())
-      .then(resp =>{
-        console.log(resp);
-      })*/
-  var chicken = 'lasagna';
-  fetch(`https://cors.io/?https://api.edamam.com/api/food-database/parser?app_id=ca747d07&app_key=722fabaee32b8118f7b1cb2e32b137cf&from=0&to=30&ingr=${chicken}`)
-      .then(resp => resp.json())
-      .then(resp => {
-        if (resp.hints.length) {
-          resp.hints.forEach(hint => {
-            console.log(hint.food.nutrients)
+  if (bmi<19){ // nizak BMI
+    fetch('https://cors.io/?https://api.edamam.com/search?q=chicken&app_id=cdf44dcd&app_key=16fcac1b229242e5ad960ae8841bca90&from=0&to=100')
+        .then(resp=>resp.json())
+        .then(function (data) {
+          var counter=0;
+          data.hits.forEach(hits=>{
+            if (hits.recipe.totalDaily.ENERC_KCAL.quantity >350&& counter <5){
+                piletina.ime=hits.recipe.label;
+               // piletina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
+                piletina.link=hits.recipe.shareAs;
+                console.log(piletina)
+
+                //dodavanje detalja
+                $("#listaPiletina").append($("<li><a href='"+piletina.link+"'>"+piletina.ime+"</a></li>"));
+              counter++;
+            }
+
           })
-        }
-      })
+        });
+    fetch('https://cors.io/?https://api.edamam.com/search?q=pork&app_id=cdf44dcd&app_key=16fcac1b229242e5ad960ae8841bca90&from=0&to=100')
+        .then(resp=>resp.json())
+        .then(function (data) {
+          var counter=0;
+          data.hits.forEach(hits=>{
+            if (hits.recipe.totalDaily.ENERC_KCAL.quantity >350&& counter <5){
+                svinjetina.ime=hits.recipe.label;
+               // svinjetina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
+                svinjetina.link=hits.recipe.shareAs;
+                console.log(svinjetina)
+                $("#listaSvinjina").append($("<li><a href='"+svinjetina.link+"'>"+svinjetina.ime+"</a></li>"));
+              counter++;
+            }
+
+          })
+        });
+    fetch('https://cors.io/?https://api.edamam.com/search?q=beef&app_id=cdf44dcd&app_key=16fcac1b229242e5ad960ae8841bca90&from=0&to=100')
+        .then(resp=>resp.json())
+        .then(function (data) {
+          var counter=0;
+          data.hits.forEach(hits=>{
+            if (hits.recipe.totalDaily.ENERC_KCAL.quantity >350&& counter <5){
+                govedina.ime=hits.recipe.label;
+               // govedina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
+                govedina.link=hits.recipe.shareAs;
+                console.log(govedina)
+                $("#listaGoveje").append($("<li><a href='"+govedina.link+"'>"+govedina.ime+"</a></li>"));
+              counter++;
+            }
+
+          })
+        });
+  }
+  else if (bmi>=19 && bmi <=25){ // normalan BMI
+
+    fetch('https://api.edamam.com/search?q=chicken&app_id=cdf44dcd&app_key=16fcac1b229242e5ad960ae8841bca90&from=0&to=100')
+        .then(resp=>resp.json())
+        .then(function (data) {
+          var counter=0;
+          data.hits.forEach(hits=>{
+            if (hits.recipe.totalDaily.ENERC_KCAL.quantity <350 && hits.recipe.totalDaily.ENERC_KCAL.quantity > 200 && counter <5){
+                piletina.ime=hits.recipe.label;
+               // piletina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
+                piletina.link=hits.recipe.shareAs;
+              console.log(piletina)
+                $("#listaPiletina").append($("<li><a href='"+piletina.link+"'>"+piletina.ime+"</a></li>"));
+              counter++;
+            }
+          })
+        });
+    fetch('https://api.edamam.com/search?q=pork&app_id=cdf44dcd&app_key=16fcac1b229242e5ad960ae8841bca90&from=0&to=100')
+        .then(resp=>resp.json())
+        .then(function (data) {
+          var counter=0;
+          data.hits.forEach(hits=>{
+            if (hits.recipe.totalDaily.ENERC_KCAL.quantity <350 && hits.recipe.totalDaily.ENERC_KCAL.quantity > 200 && counter <5){
+                svinjetina.ime=hits.recipe.label;
+                //svinjetina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
+                svinjetina.link=hits.recipe.shareAs;
+              console.log(svinjetina)
+                $("#listaSvinjina").append($("<li><a href='"+svinjetina.link+"'>"+svinjetina.ime+"</a></li>"));
+              counter++;
+            }
+          })
+        });
+    fetch('https://api.edamam.com/search?q=beef&app_id=cdf44dcd&app_key=16fcac1b229242e5ad960ae8841bca90&from=0&to=100')
+        .then(resp=>resp.json())
+        .then(function (data) {
+          var counter=0;
+          data.hits.forEach(hits=>{
+            if (hits.recipe.totalDaily.ENERC_KCAL.quantity <350 && hits.recipe.totalDaily.ENERC_KCAL.quantity > 200 && counter <5){
+                govedina.ime=hits.recipe.label;
+                //govedina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
+                govedina.link=hits.recipe.shareAs;
+               console.log(govedina)
+                $("#listaGoveje").append($("<li><a href='"+govedina.link+"'>"+govedina.ime+"</a></li>"));
+              counter++;
+            }
+          })
+        })
+  }
+  else if (bmi > 25){ // visok BMI
+    fetch('https://api.edamam.com/search?q=chicken&app_id=cdf44dcd&app_key=16fcac1b229242e5ad960ae8841bca90&from=0&to=100')
+        .then(resp=>resp.json())
+        .then(function (data) {
+          var counter=0;
+          data.hits.forEach(hits=>{
+            if (hits.recipe.totalDaily.ENERC_KCAL.quantity < 200&& counter <5){
+                piletina.ime=hits.recipe.label;
+               // piletina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
+                piletina.link=hits.recipe.shareAs;
+                console.log(piletina)
+                $("#listaPiletina").append($("<li><a href='"+piletina.link+"'>"+piletina.ime+"</a></li>"));
+              counter++;
+            }
+
+          })
+        });
+    fetch('https://api.edamam.com/search?q=pork&app_id=cdf44dcd&app_key=16fcac1b229242e5ad960ae8841bca90&from=0&to=100')
+        .then(resp=>resp.json())
+        .then(function (data) {
+          var counter=0;
+          data.hits.forEach(hits=>{
+            if (hits.recipe.totalDaily.ENERC_KCAL.quantity < 200&& counter <5){
+                svinjetina.ime=hits.recipe.label;
+                //svinjetina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
+                svinjetina.link=hits.recipe.shareAs;
+                console.log(svinjetina)
+                $("#listaSvinjina").append($("<li><a href='"+svinjetina.link+"'>"+svinjetina.ime+"</a></li>"));
+              counter++;
+            }
+
+          })
+        });
+    fetch('https://api.edamam.com/search?q=beef&app_id=cdf44dcd&app_key=16fcac1b229242e5ad960ae8841bca90&from=0&to=100')
+        .then(resp=>resp.json())
+        .then(function (data) {
+          var counter=0;
+          data.hits.forEach(hits=>{
+            if (hits.recipe.totalDaily.ENERC_KCAL.quantity < 200&& counter <5){
+                govedina.ime=hits.recipe.label;
+               // govedina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
+                govedina.link=hits.recipe.shareAs;
+                console.log(govedina)
+                $("#listaGoveje").append($("<li><a href='"+govedina.link+"'>"+govedina.ime+"</a></li>"));
+              counter++;
+            }
+
+          })
+        });
+  }
 }
 
 
 function preberiEHRodBolnika() {
+    //brisanje recepata
+    $("ol").empty();
+
   var ehrId = $("#preberiEHRid").val();
   if (!ehrId || ehrId.trim().length == 0) {
     $("#preberiSporocilo").html("<span class='obvestilo label label-warning " +
@@ -207,6 +335,7 @@ function preberiEHRodBolnika() {
 
           $("#preberiSporocilo").html("<span class='obvestilo label label-success " + "fade-in'>"+ 'Vaš BMI je '+BMI);
           narisiGraf(BMI);
+          getRecipes(BMI);
         } else {
           $("#preberiSporocilo").html(
               "<span class='obvestilo label label-warning fade-in'>" +
@@ -224,54 +353,28 @@ function preberiEHRodBolnika() {
 
 
 
-var mapa;
+//var mapa;
 window.addEventListener("load", function () {
 
-  getRecipes();
+    $("#chicken").click(function () {
+        $("#listaPiletina").css({'visibility':'visible'});
+        $("#listaSvinjina").css({'visibility':'hidden'});
+        $("#listaGoveje").css({'visibility':'hidden'});
+
+    });
+    $("#pork").click(function () {
+        $("#listaSvinjina").css({'visibility':'visible'});
+        $("#listaPiletina").css({'visibility':'hidden'});
+        $("#listaGoveje").css({'visibility':'hidden'});
+    });
+    $("#beef").click(function () {
+        $("#listaGoveje").css({'visibility':'visible'});
+        $("#listaSvinjina").css({'visibility':'hidden'});
+        $("#listaPiletina").css({'visibility':'hidden'});
+    });
+  //prikaziMapo();
   narisiGraf(patitentBMI);
-  //centriranje mape na ljubljanu
-  var mapOptions ={
-    center: [46.051254, 14.512081],
-    zoom: 13
-  };
-  mapa= L.map('mapa_id',mapOptions);
-  var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-  mapa.addLayer(layer);
 
-  var popup =L.popup();
-  function obKlikuNaMapo(e) {
-    var latlng = e.latlng;
-    popup
-      .setLatLng(latlng)
-      .setContent("Izbrana točka:" + latlng.toString())
-      .openOn(mapa);
-
-    //prikazPoti(latlng);
-  }
-
-  mapa.on('click',obKlikuNaMapo);
-
-  //podatci o bolnicama
-  const request = new XMLHttpRequest();
-  request.open('GET', 'https://teaching.lavbic.net/cdn/OIS/DN3/bolnisnice.json');
-  request.send();
-  request.onload = () => {
-    if (request.status === 200) {
-      //console.log("Success"); // So extract data from json and create table
-
-     var bolnice =JSON.parse(request.response).features;
-
-     for (var i =0;i<bolnice.length;i++){
-      // console.log(bolnice[i].geometry.coordinates);
-       var polygon = L.polygon(bolnice[i].geometry.coordinates, {color: 'red'}).addTo(mapa);
-     }
-
-    }
-  };
-
-  request.onerror = () => {
-    console.log("error")
-  };
 
 });
 
@@ -309,6 +412,53 @@ function narisiGraf(bmi){
   Plotly.newPlot('diagram', data, layout, {showSendToCloud:true});
 }
 //end of bar chart
+
+function prikaziMapo(){
+  var mapa;
+  var mapOptions ={
+    center: [46.051254, 14.512081],
+    zoom: 13
+  };
+  mapa= L.map('mapa_id',mapOptions);
+  var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+  mapa.addLayer(layer);
+
+  var popup =L.popup();
+  function obKlikuNaMapo(e) {
+    var latlng = e.latlng;
+    popup
+        .setLatLng(latlng)
+        .setContent("Izbrana točka:" + latlng.toString())
+        .openOn(mapa);
+
+    //prikazPoti(latlng);
+  }
+
+  mapa.on('click',obKlikuNaMapo);
+
+  //podatci o bolnicama
+  const request = new XMLHttpRequest();
+  request.open('GET', 'https://teaching.lavbic.net/cdn/OIS/DN3/bolnisnice.json');
+  request.send();
+  request.onload = () => {
+    if (request.status === 200) {
+      //console.log("Success"); // So extract data from json and create table
+
+      var bolnice =JSON.parse(request.response).features;
+
+      for (var i =0;i<bolnice.length;i++){
+        // console.log(bolnice[i].geometry.coordinates);
+        var polygon = L.polygon(bolnice[i].geometry.coordinates, {color: 'red'}).addTo(mapa);
+      }
+
+    }
+  };
+
+  request.onerror = () => {
+    console.log("error")
+  };
+
+}
 
 
 

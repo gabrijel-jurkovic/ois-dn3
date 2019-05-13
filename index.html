@@ -5,13 +5,18 @@
   <title>eZdravje :: 4. DN :: OIS 2017/2018</title>
   <link href="knjiznice/css/bootstrap.min.css" rel="stylesheet">
   <link href="knjiznice/css/styles.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin=""/>
   <style>
     body {padding-top: 70px;}
   </style>
   <script src="knjiznice/js/jquery-2.2.3.min.js"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="knjiznice/js/bootstrap.min.js"></script>
-
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+          integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+          crossorigin=""></script>
   <script src="knjiznice/js/koda.js"></script>
 
 </head>
@@ -151,23 +156,46 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12"><b>Zdrava prehrana</b></div>
+            <div class="col-lg-12 col-md-12 col-sm-12"><b>Priporočeni recepti za vaš BMI</b></div>
           </div>
         </div>
         <div class="panel-body">
 
 
           <b>Tipi hrane</b>, razvrščeni od <b>največje</b> do <b>najmanjše</b> priporočene pogostosti uživanja. Ob kliku na tip hrane se prikaže drug stolpec, v katerem so našteti nekateri <b>primeri</b> izbranega tipa.<hr>
-          <div id="template" class="yui3-skin-sam dt-example col-lg-12 col-md-12 col-sm-12"> <!-- You need this skin class -->
 
-            <div class="col-lg-6 col-md-6 col-sm-6" id="mtable"></div>
+
 
             <!-- This is the HTML section for the "Details" markup ...
                  NOTE: it is hidden initially !!   -->
-            <div class="col-lg-6 col-md-6 col-sm-6" id="chars" style="display:none;">
-              <div id="dtable"></div>
+
+            <div class="row" style="padding: 5px" id="chars">
+              <div class="col-sm-4">
+                <button id="chicken">Piščančije jedi</button>
+                <ol style="visibility: hidden" id="listaPiletina">
+
+                </ol>
+              </div>
+
+              <div class="col-sm-4">
+                <button id="pork">Jedi od svinjine</button>
+                <ol style="visibility: hidden" id="listaSvinjina">
+
+                </ol>
+              </div>
+
+              <div class="col-sm-4">
+                <button id="beef">Goveje jedi</button>
+                <ol style="visibility: hidden" id="listaGoveje">
+
+                </ol>
+              </div>
             </div>
-          </div>
+
+
+
+
+
 
         </div>
       </div>
