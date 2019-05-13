@@ -344,6 +344,7 @@ function preberiEHRodBolnika() {
 
 //var mapa;
 window.addEventListener("load", function () {
+    console.log(window.location.pathname)
     if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
         prikaziMapo();
     }
