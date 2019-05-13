@@ -1,0 +1,8 @@
+.mapa{
+    margin: auto;
+    width: 80%;
+    height: 650px;
+    border: 2px solid dodgerblue;
+    border-radius: 10px;
+    padding: 10px;
+}
