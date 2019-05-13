@@ -24,3 +24,10 @@ button{
 #beef,#chicken, #pork{
     width: 100%;
 }
+
+ol{
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background: rgb(245, 245, 245);
+}
+

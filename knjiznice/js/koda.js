@@ -141,9 +141,7 @@ function getRecipes(bmi) {
           data.hits.forEach(hits=>{
             if (hits.recipe.totalDaily.ENERC_KCAL.quantity >350&& counter <5){
                 piletina.ime=hits.recipe.label;
-               // piletina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
                 piletina.link=hits.recipe.shareAs;
-                console.log(piletina)
 
                 //dodavanje detalja
                 $("#listaPiletina").append($("<li><a href='"+piletina.link+"'>"+piletina.ime+"</a></li>"));
@@ -159,9 +157,8 @@ function getRecipes(bmi) {
           data.hits.forEach(hits=>{
             if (hits.recipe.totalDaily.ENERC_KCAL.quantity >350&& counter <5){
                 svinjetina.ime=hits.recipe.label;
-               // svinjetina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
                 svinjetina.link=hits.recipe.shareAs;
-                console.log(svinjetina)
+
                 $("#listaSvinjina").append($("<li><a href='"+svinjetina.link+"'>"+svinjetina.ime+"</a></li>"));
               counter++;
             }
@@ -175,9 +172,8 @@ function getRecipes(bmi) {
           data.hits.forEach(hits=>{
             if (hits.recipe.totalDaily.ENERC_KCAL.quantity >350&& counter <5){
                 govedina.ime=hits.recipe.label;
-               // govedina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
                 govedina.link=hits.recipe.shareAs;
-                console.log(govedina)
+
                 $("#listaGoveje").append($("<li><a href='"+govedina.link+"'>"+govedina.ime+"</a></li>"));
               counter++;
             }
@@ -194,9 +190,8 @@ function getRecipes(bmi) {
           data.hits.forEach(hits=>{
             if (hits.recipe.totalDaily.ENERC_KCAL.quantity <350 && hits.recipe.totalDaily.ENERC_KCAL.quantity > 200 && counter <5){
                 piletina.ime=hits.recipe.label;
-               // piletina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
                 piletina.link=hits.recipe.shareAs;
-              console.log(piletina)
+
                 $("#listaPiletina").append($("<li><a href='"+piletina.link+"'>"+piletina.ime+"</a></li>"));
               counter++;
             }
@@ -209,9 +204,8 @@ function getRecipes(bmi) {
           data.hits.forEach(hits=>{
             if (hits.recipe.totalDaily.ENERC_KCAL.quantity <350 && hits.recipe.totalDaily.ENERC_KCAL.quantity > 200 && counter <5){
                 svinjetina.ime=hits.recipe.label;
-                //svinjetina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
                 svinjetina.link=hits.recipe.shareAs;
-              console.log(svinjetina)
+
                 $("#listaSvinjina").append($("<li><a href='"+svinjetina.link+"'>"+svinjetina.ime+"</a></li>"));
               counter++;
             }
@@ -224,9 +218,8 @@ function getRecipes(bmi) {
           data.hits.forEach(hits=>{
             if (hits.recipe.totalDaily.ENERC_KCAL.quantity <350 && hits.recipe.totalDaily.ENERC_KCAL.quantity > 200 && counter <5){
                 govedina.ime=hits.recipe.label;
-                //govedina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
                 govedina.link=hits.recipe.shareAs;
-               console.log(govedina)
+
                 $("#listaGoveje").append($("<li><a href='"+govedina.link+"'>"+govedina.ime+"</a></li>"));
               counter++;
             }
@@ -241,9 +234,8 @@ function getRecipes(bmi) {
           data.hits.forEach(hits=>{
             if (hits.recipe.totalDaily.ENERC_KCAL.quantity < 200&& counter <5){
                 piletina.ime=hits.recipe.label;
-               // piletina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
                 piletina.link=hits.recipe.shareAs;
-                console.log(piletina)
+
                 $("#listaPiletina").append($("<li><a href='"+piletina.link+"'>"+piletina.ime+"</a></li>"));
               counter++;
             }
@@ -257,9 +249,8 @@ function getRecipes(bmi) {
           data.hits.forEach(hits=>{
             if (hits.recipe.totalDaily.ENERC_KCAL.quantity < 200&& counter <5){
                 svinjetina.ime=hits.recipe.label;
-                //svinjetina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
                 svinjetina.link=hits.recipe.shareAs;
-                console.log(svinjetina)
+
                 $("#listaSvinjina").append($("<li><a href='"+svinjetina.link+"'>"+svinjetina.ime+"</a></li>"));
               counter++;
             }
@@ -273,9 +264,8 @@ function getRecipes(bmi) {
           data.hits.forEach(hits=>{
             if (hits.recipe.totalDaily.ENERC_KCAL.quantity < 200&& counter <5){
                 govedina.ime=hits.recipe.label;
-               // govedina.kalorije=Math.round(hits.recipe.totalDaily.ENERC_KCAL.quantity);
                 govedina.link=hits.recipe.shareAs;
-                console.log(govedina)
+
                 $("#listaGoveje").append($("<li><a href='"+govedina.link+"'>"+govedina.ime+"</a></li>"));
               counter++;
             }
@@ -308,34 +298,33 @@ function preberiEHRodBolnika() {
       success: function (res) {
         if (res.length > 0) {
           teza=parseFloat(res[0].weight);
-        } else {
-          $("#preberiSporocilo").html(
-              "<span class='obvestilo label label-warning fade-in'>" +
-              "Ni podatkov!</span>");
-        }
-      },
-      error: function(err) {
-        $("#preberiSporocilo").html("<span class='obvestilo label " +
-            "label-danger fade-in'>Napaka '" +
-            JSON.parse(err.responseText).userMessage + "'!");
-      }
-    });
+            //pridobivanje visine pacienta
+            $.ajax({
+                url: baseUrl + "/view/" + ehrId+"/height",
+                type: 'GET',
+                headers: {
+                    "Authorization": getAuthorization()
+                },
+                success: function (res) {
+                    visina= parseFloat(res[0].height)/100;
+                    var BMI =(teza/(visina*visina)).toFixed(2);
+                    if (res.length > 0) {
 
-    //pridobivanje visine pacienta
-    $.ajax({
-      url: baseUrl + "/view/" + ehrId+"/height",
-      type: 'GET',
-      headers: {
-        "Authorization": getAuthorization()
-      },
-      success: function (res) {
-        visina= parseFloat(res[0].height)/100;
-        var BMI =(teza/(visina*visina)).toFixed(2);
-        if (res.length > 0) {
-
-          $("#preberiSporocilo").html("<span class='obvestilo label label-success " + "fade-in'>"+ 'Vaš BMI je '+BMI);
-          narisiGraf(BMI);
-          getRecipes(BMI);
+                        $("#preberiSporocilo").html("<span class='obvestilo label label-success " + "fade-in'>"+ 'Vaš BMI je '+BMI);
+                        narisiGraf(BMI);
+                        getRecipes(BMI);
+                    } else {
+                        $("#preberiSporocilo").html(
+                            "<span class='obvestilo label label-warning fade-in'>" +
+                            "Ni podatkov!</span>");
+                    }
+                },
+                error: function(err) {
+                    $("#preberiSporocilo").html("<span class='obvestilo label " +
+                        "label-danger fade-in'>Napaka '" +
+                        JSON.parse(err.responseText).userMessage + "'!");
+                }
+            });
         } else {
           $("#preberiSporocilo").html(
               "<span class='obvestilo label label-warning fade-in'>" +
@@ -355,7 +344,12 @@ function preberiEHRodBolnika() {
 
 //var mapa;
 window.addEventListener("load", function () {
-
+    if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
+        prikaziMapo();
+    }
+    else if(window.location.pathname==="/gabrijel98.bitbucket.org/index.html"){
+        narisiGraf(patitentBMI);
+    }
     $("#chicken").click(function () {
         $("#listaPiletina").css({'visibility':'visible'});
         $("#listaSvinjina").css({'visibility':'hidden'});
@@ -372,10 +366,6 @@ window.addEventListener("load", function () {
         $("#listaSvinjina").css({'visibility':'hidden'});
         $("#listaPiletina").css({'visibility':'hidden'});
     });
-  //prikaziMapo();
-  narisiGraf(patitentBMI);
-
-
 });
 
 
@@ -442,12 +432,8 @@ function prikaziMapo(){
   request.send();
   request.onload = () => {
     if (request.status === 200) {
-      //console.log("Success"); // So extract data from json and create table
-
       var bolnice =JSON.parse(request.response).features;
-
       for (var i =0;i<bolnice.length;i++){
-        // console.log(bolnice[i].geometry.coordinates);
         var polygon = L.polygon(bolnice[i].geometry.coordinates, {color: 'red'}).addTo(mapa);
       }
 
