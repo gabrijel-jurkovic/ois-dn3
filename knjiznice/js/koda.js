@@ -442,7 +442,6 @@ function preberiEHRodBolnika() {
 
 
 
-//var mapa;
 window.addEventListener("load", function () {
 
     // predloge bolnikov
@@ -501,15 +500,18 @@ window.addEventListener("load", function () {
 
 
     //for distribution
-    /*if(window.location.pathname==="/bolnisnice.html"){
-        prikaziMapo();
+    if(window.location.pathname==="/bolnisnice.html"){
+        navigator.geolocation.getCurrentPosition(function(location) {
+            var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
+            prikaziMapo(latlng);
+        });
     }
     else if(window.location.pathname==="/index.html"){
         narisiGraf(patitentBMI);
-    }*/
+    }
 
     // for development
-    if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
+   /* if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
         navigator.geolocation.getCurrentPosition(function(location) {
             var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
             prikaziMapo(latlng);
@@ -517,7 +519,9 @@ window.addEventListener("load", function () {
     }
     else if(window.location.pathname==="/gabrijel98.bitbucket.org/index.html"){
         narisiGraf(patitentBMI);
-    }
+    }*/
+
+
     $("#chicken").click(function () {
         $("#listaPiletina").css({'visibility':'visible'});
         $("#listaSvinjina").css({'visibility':'hidden'});
