@@ -26,12 +26,111 @@ function getAuthorization() {
  * @return ehrId generiranega pacienta
  */
 function generirajPodatke(stPacienta) {
-  ehrId = "";
+  if (stPacienta===1){
+      var ime = "Gabrijel";
+      var priimek = "Jurkovic";
+      var datumRojstva = "1998-12-05";
+      var visina= 192;
+      var teza = 82;
 
-  // TODO: Potrebno implementirati
+      return postGenerated(ime,priimek,datumRojstva,visina,teza);
+  }
+  else if(stPacienta===2){
+      var ime = "Don Vito";
+      var priimek = "Corleone";
+      var datumRojstva = "1892-12-07";
+      var visina= 175;
+      var teza = 95;
 
-  return ehrId;
+      return postGenerated(ime,priimek,datumRojstva,visina,teza);
+  }
+  else if(stPacienta===3){
+      var ime = "Claudia";
+      var priimek = "Schiffer";
+      var datumRojstva = "1970-08-25";
+      var visina= 180;
+      var teza = 58;
+
+      return postGenerated(ime,priimek,datumRojstva,visina,teza);
+  }
+
 }
+
+function postGenerated (ime,priimek,datumRojstva,visina,teza){
+    var ehr="";
+    $.ajax({
+        async:false,
+        url: baseUrl + "/ehr",
+        type: 'POST',
+        headers: {
+            "Authorization": getAuthorization()
+        },
+        success: function (data) {
+            var ehrId = data.ehrId;
+            ehr=ehrId;
+            var partyData = {
+                firstNames: ime,
+                lastNames: priimek,
+                dateOfBirth: datumRojstva,
+                additionalInfo: {"ehrId": ehrId}
+            };
+            $.ajax({
+                url: baseUrl + "/demographics/party",
+                type: 'POST',
+                headers: {
+                    "Authorization": getAuthorization()
+                },
+                contentType: 'application/json',
+                data: JSON.stringify(partyData),
+                success: function (party) {
+                    if (party.action == 'CREATE') {
+                        var datumInUra = new Date();
+                        var telesnaVisina = visina;
+                        var telesnaTeza = teza;
+                        var merilec = "Gabrijel Jurkovic";
+
+                        if (!ehrId || ehrId.trim().length == 0) {
+                            $("#dodajMeritveVitalnihZnakovSporocilo").html("<span class='obvestilo label label-warning fade-in'>Prosim vnesite zahtevane podatke!</span>");
+                        } else {
+                            var podatki = {
+                                "ctx/language": "en",
+                                "ctx/territory": "SI",
+                                "ctx/time": datumInUra,
+                                "vital_signs/height_length/any_event/body_height_length": telesnaVisina,
+                                "vital_signs/body_weight/any_event/body_weight": telesnaTeza,
+                            };
+                            var parametriZahteve = {
+                                "ehrId": ehrId,
+                                templateId: 'Vital Signs',
+                                format: 'FLAT',
+                                committer: merilec
+                            };
+                            $.ajax({
+                                url: baseUrl + "/composition?" + $.param(parametriZahteve),
+                                type: 'POST',
+                                headers: {
+                                    "Authorization": getAuthorization()
+                                },
+                                contentType: 'application/json',
+                                data: JSON.stringify(podatki),
+                            });
+                        }
+                    }
+                },
+                error: function(err) {
+                    $("#kreirajSporocilo").html("<span class='obvestilo label " +
+                        "label-danger fade-in'>Napaka '" +
+                        JSON.parse(err.responseText).userMessage + "'!");
+                }
+
+            });
+        }
+
+    });
+return ehr;
+}
+
+
 
 // TODO: Tukaj implementirate funkcionalnost, ki jo podpira vaša aplikacija
 
@@ -342,11 +441,79 @@ function preberiEHRodBolnika() {
 
 
 
+
 //var mapa;
 window.addEventListener("load", function () {
-    console.log(window.location.pathname)
-    if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
+
+    // predloge bolnikov
+    $("#preberiPredlogoBolnika").on('change',function () {
+        console.log($("#preberiPredlogoBolnika").val())
+        if ($("#preberiPredlogoBolnika").val() === "Gabrijel Jurkovic"){
+            $("#kreirajIme").val("Gabrijel");
+            $("#kreirajPriimek").val("Jurkovic");
+            $("#kreirajDatumRojstva").val("1998-12-05");
+            $("#kreirajVisino").val("192");
+            $("#kreirajTezo").val("82");
+        }
+        else if ($("#preberiPredlogoBolnika").val() === "Don Vito Corleone"){
+            $("#kreirajIme").val("Don Vito");
+            $("#kreirajPriimek").val("Corleone");
+            $("#kreirajDatumRojstva").val("1892-12-07");
+            $("#kreirajVisino").val("175");
+            $("#kreirajTezo").val("95");
+        }
+        else if ($("#preberiPredlogoBolnika").val() === "Claudia Schiffer"){
+            $("#kreirajIme").val("Claudia");
+            $("#kreirajPriimek").val("Schiffer");
+            $("#kreirajDatumRojstva").val("1970-08-25");
+            $("#kreirajVisino").val("180");
+            $("#kreirajTezo").val("58");
+        }
+    });
+    //generiranje podatkov
+    $("#generiranje").on('click',function () {
+        console.log("radi")
+        for (var i = 1; i <= 3; i++){
+            if (i==1){
+                $("#patient1").attr("ehrValue",generirajPodatke(i));
+            }
+            else if( i==2){
+                $("#patient2").attr("ehrValue",generirajPodatke(i));
+            }
+            else if (i==3){
+                $("#patient3").attr("ehrValue",generirajPodatke(i));
+            }
+        }
+
+    });
+    //izbira 3 pacijenti
+    $("#preberiObstojeciEHR").on('change',function () {
+       if ($("#preberiObstojeciEHR").val() == "Gabrijel Jurkovic"){
+           $("#preberiEHRid").val($("#patient1").attr("ehrValue"));
+       }
+       else if($("#preberiObstojeciEHR").val() == "Don Vito Corleone"){
+           $("#preberiEHRid").val($("#patient2").attr("ehrValue"));
+       }
+       else if($("#preberiObstojeciEHR").val() == "Claudia Schiffer"){
+           $("#preberiEHRid").val($("#patient3").attr("ehrValue"));
+       }
+    });
+
+
+    //for distribution
+    /*if(window.location.pathname==="/bolnisnice.html"){
         prikaziMapo();
+    }
+    else if(window.location.pathname==="/index.html"){
+        narisiGraf(patitentBMI);
+    }*/
+
+    // for development
+    if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
+        navigator.geolocation.getCurrentPosition(function(location) {
+            var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
+            prikaziMapo(latlng);
+        });
     }
     else if(window.location.pathname==="/gabrijel98.bitbucket.org/index.html"){
         narisiGraf(patitentBMI);
@@ -404,15 +571,16 @@ function narisiGraf(bmi){
 }
 //end of bar chart
 
-function prikaziMapo(){
+function prikaziMapo(positionInfo){
   var mapa;
   var mapOptions ={
-    center: [46.051254, 14.512081],
+    center: positionInfo,
     zoom: 13
   };
   mapa= L.map('mapa_id',mapOptions);
   var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
   mapa.addLayer(layer);
+
 
   var popup =L.popup();
   function obKlikuNaMapo(e) {
@@ -422,20 +590,24 @@ function prikaziMapo(){
         .setContent("Izbrana točka:" + latlng.toString())
         .openOn(mapa);
 
-    //prikazPoti(latlng);
   }
 
   mapa.on('click',obKlikuNaMapo);
 
   //podatci o bolnicama
-  const request = new XMLHttpRequest();
+ const request = new XMLHttpRequest();
   request.open('GET', 'https://teaching.lavbic.net/cdn/OIS/DN3/bolnisnice.json');
   request.send();
   request.onload = () => {
     if (request.status === 200) {
       var bolnice =JSON.parse(request.response).features;
       for (var i =0;i<bolnice.length;i++){
-        var polygon = L.polygon(bolnice[i].geometry.coordinates, {color: 'red'}).addTo(mapa);
+          
+         for (var j=0;j<bolnice[i].geometry.coordinates[0].length;j++){
+              bolnice[i].geometry.coordinates[0][j].reverse();
+
+          }
+        var polygon = L.polygon(bolnice[i].geometry.coordinates[0], {color: 'blue'}).addTo(mapa);
       }
 
     }
@@ -446,11 +618,3 @@ function prikaziMapo(){
   };
 
 }
-
-
-
-
-
-
-
-

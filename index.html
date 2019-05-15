@@ -29,7 +29,8 @@
           <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
         </button>
         <!-- ZAČETEK: Ime vaše aplikacije -->
-        <a class="navbar-brand" href="index.html">{ime vaše aplikacije}</a>
+        <a class="navbar-brand" href="index.html">eBMI
+        </a>
         <!-- KONEC: Ime vaše aplikacije -->
       </div>
       <div class="collapse navbar-collapse" id="menujska-vrstica">
@@ -37,7 +38,7 @@
           <li><a href="opis.html">Opis ideje</a></li>
           <li><a href="nacrt.html">Načrt informacijske rešitve</a></li>
           <li><a href="bolnisnice.html">Bližnje bolnišnice</a></li>
-          <li><a href="#">Generiranje podatkov</a></li>
+          <li><a href="#" id="generiranje">Generiranje podatkov</a></li>
         </ul>
       </div>
     </div>
@@ -53,9 +54,9 @@
             <div class="col-lg-8 col-md-8 col-sm-8"><b>Kreiraj EHR zapis</b> za novega pacienta</div>
             <div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm" id="preberiPredlogoBolnika">
               <option value=""></option>
-              <option value="Bill,Gates,178,63.5">Bill Gates</option>
-              <option value="Gabe,Newell,170,136">Gabe Newell</option>
-              <option value="Cara,Delevingne,177,51">Cara Delevingne</option>
+              <option value="Gabrijel Jurkovic">Gabrijel Jurkovic</option>
+              <option value="Don Vito Corleone">Don Vito Corleone</option>
+              <option value="Claudia Schiffer">Claudia Schiffer</option>
             </select></div>
           </div>
         </div>
@@ -76,9 +77,9 @@
            <div class="row">
              <div class="col-lg-8 col-md-8 col-sm-8"><b>Preberi BMI </b> obstoječega pacienta</div>
              <div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm" id="preberiObstojeciEHR"><option value=""></option>
-               <option value="b0687c84-2c2e-4c69-a6af-28559f5473ba">Bill Gates</option>
-               <option value="bc2f4d87-0bdd-4827-be8d-2713e4259bf1">Gabe Newell</option>
-               <option value="e389a94b-44ab-4882-bad3-b9ed0b43520a">Cara Delevingne</option></select></div>
+               <option id="patient1" value="Gabrijel Jurkovic" ehrValue="">Gabrijel Jurkovic</option>
+               <option id="patient2" value="Don Vito Corleone" ehrValue="">Don Vito Corleone</option>
+               <option id="patient3" value="Claudia Schiffer" ehrValue="">Claudia Schiffer</option></select></div>
            </div>
          </div>
          <div class="panel-body">
