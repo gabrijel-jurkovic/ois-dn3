@@ -5,7 +5,7 @@ var queryUrl = baseUrl + '/query';
 var username = "ois.seminar";
 var password = "ois4fri";
 var patitentBMI=null;
-
+var ikona ="https://img.icons8.com/color/48/000000/marker.png";
 /**
  * Generiranje niza za avtorizacijo na podlagi uporabniškega imena in gesla,
  * ki je šifriran v niz oblike Base64
@@ -499,7 +499,7 @@ window.addEventListener("load", function () {
     console.log(window.location.pathname)
 
     //for distribution
-   if(window.location.pathname==="/bolnisnice.html"){
+   /*if(window.location.pathname==="/bolnisnice.html"){
         navigator.geolocation.getCurrentPosition(function(location) {
             var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
             prikaziMapo(latlng);
@@ -507,10 +507,10 @@ window.addEventListener("load", function () {
     }
     else if(window.location.pathname==="/index.html"){
         narisiGraf(patitentBMI);
-    }
+    }*/
 
     // for development
-   /*if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
+   if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
         navigator.geolocation.getCurrentPosition(function(location) {
             var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
             prikaziMapo(latlng);
@@ -518,7 +518,7 @@ window.addEventListener("load", function () {
     }
     else if(window.location.pathname==="/gabrijel98.bitbucket.org/index.html"){
         narisiGraf(patitentBMI);
-    }*/
+    }
 
 
     $("#chicken").click(function () {
@@ -584,6 +584,13 @@ function prikaziMapo(positionInfo) {
     var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     mapa.addLayer(layer);
 
+    var firefoxIcon = L.icon({
+        iconUrl: 'https://img.icons8.com/color/48/000000/marker.png',
+        iconSize: [38, 45], // size of the icon
+    });
+
+    // create marker object, pass custom icon as option, add to map
+    var marker = L.marker([positionInfo.lat,positionInfo.lng], {icon: firefoxIcon}).addTo(mapa);
 
     //podatci o bolnicama
     const request = new XMLHttpRequest();
