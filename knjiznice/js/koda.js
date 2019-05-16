@@ -506,6 +506,7 @@ window.addEventListener("load", function () {
         });
     }
     else if(window.location.pathname==="/" || window.location.pathname==="/index.html"){
+        console.log("radi")
         narisiGraf(patitentBMI);
     }
 
