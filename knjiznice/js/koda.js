@@ -505,7 +505,7 @@ window.addEventListener("load", function () {
             prikaziMapo(latlng);
         });
     }
-    else if(window.location.pathname==="/index.html"){
+    else if(window.location.pathname==="/" || window.location.pathname==="/index.html"){
         narisiGraf(patitentBMI);
     }
 
