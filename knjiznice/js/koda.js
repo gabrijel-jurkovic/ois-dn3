@@ -446,7 +446,6 @@ window.addEventListener("load", function () {
 
     // predloge bolnikov
     $("#preberiPredlogoBolnika").on('change',function () {
-        console.log($("#preberiPredlogoBolnika").val())
         if ($("#preberiPredlogoBolnika").val() === "Gabrijel Jurkovic"){
             $("#kreirajIme").val("Gabrijel");
             $("#kreirajPriimek").val("Jurkovic");
@@ -471,7 +470,6 @@ window.addEventListener("load", function () {
     });
     //generiranje podatkov
     $("#generiranje").on('click',function () {
-        console.log("radi")
         for (var i = 1; i <= 3; i++){
             if (i==1){
                 $("#patient1").attr("ehrValue",generirajPodatke(i));
@@ -498,9 +496,10 @@ window.addEventListener("load", function () {
        }
     });
 
+    console.log(window.location.pathname)
 
     //for distribution
-    if(window.location.pathname==="/bolnisnice.html"){
+   if(window.location.pathname==="/bolnisnice.html"){
         navigator.geolocation.getCurrentPosition(function(location) {
             var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
             prikaziMapo(latlng);
@@ -511,7 +510,7 @@ window.addEventListener("load", function () {
     }
 
     // for development
-   /* if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
+   /*if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
         navigator.geolocation.getCurrentPosition(function(location) {
             var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
             prikaziMapo(latlng);
@@ -575,50 +574,75 @@ function narisiGraf(bmi){
 }
 //end of bar chart
 
-function prikaziMapo(positionInfo){
-  var mapa;
-  var mapOptions ={
-    center: positionInfo,
-    zoom: 13
-  };
-  mapa= L.map('mapa_id',mapOptions);
-  var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-  mapa.addLayer(layer);
+function prikaziMapo(positionInfo) {
+    var mapa;
+    var mapOptions = {
+        center: positionInfo,
+        zoom: 13
+    };
+    mapa = L.map('mapa_id', mapOptions);
+    var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    mapa.addLayer(layer);
 
 
-  var popup =L.popup();
-  function obKlikuNaMapo(e) {
-    var latlng = e.latlng;
-    popup
-        .setLatLng(latlng)
-        .setContent("Izbrana točka:" + latlng.toString())
-        .openOn(mapa);
+    //podatci o bolnicama
+    const request = new XMLHttpRequest();
+    request.open('GET', 'https://teaching.lavbic.net/cdn/OIS/DN3/bolnisnice.json');
+    request.send();
+    request.onload = () => {
+        if (request.status === 200) {
+            var bolnice = JSON.parse(request.response).features;
+            for (var i = 0; i < bolnice.length; i++) {
 
-  }
+                if (bolnice[i].geometry.type == "Polygon") {
+                    var name = bolnice[i].properties.name;
+                    if (name == null) {
+                        name = "Ni podatkov";
+                    }
 
-  mapa.on('click',obKlikuNaMapo);
+                    if (bolnice[i].properties.hasOwnProperty("addr:street")) {
+                        var addres = bolnice[i].properties["addr:street"];
+                        var addresNum = bolnice[i].properties["addr:housenumber"];
+                    } else {
+                        var addres = "Ni podatkov";
+                        var addresNum = "";
+                    }
 
-  //podatci o bolnicama
- const request = new XMLHttpRequest();
-  request.open('GET', 'https://teaching.lavbic.net/cdn/OIS/DN3/bolnisnice.json');
-  request.send();
-  request.onload = () => {
-    if (request.status === 200) {
-      var bolnice =JSON.parse(request.response).features;
-      for (var i =0;i<bolnice.length;i++){
-          
-         for (var j=0;j<bolnice[i].geometry.coordinates[0].length;j++){
-              bolnice[i].geometry.coordinates[0][j].reverse();
+                    for (var j = 0; j < bolnice[i].geometry.coordinates[0].length; j++) {
+                        bolnice[i].geometry.coordinates[0][j].reverse();
+                       // console.log(bolnice[i].geometry.coordinates[0][j][0])
 
-          }
-        var polygon = L.polygon(bolnice[i].geometry.coordinates[0], {color: 'blue'}).addTo(mapa);
-      }
+                    }
 
-    }
-  };
+                    var polygon = L.polygon(bolnice[i].geometry.coordinates, {color: 'blue'}).bindPopup("<b>Ime:</b> " + name + "<br><b>Naslov:</b> " + addres + " " + addresNum);
 
-  request.onerror = () => {
-    console.log("error")
-  };
+                    for (var j=0;j<bolnice[i].geometry.coordinates[0].length;j++) {
+                        if (distance(bolnice[i].geometry.coordinates[0][j][0], bolnice[i].geometry.coordinates[0][j][1], positionInfo.lat, positionInfo.lng) <= 2) {
+                            polygon.options.color = "green";
+                            polygon.addTo(mapa);
+                        } else {
+                            polygon.options.color="blue";
+                            polygon.addTo(mapa);
+                        }
+                    }
 
+                }
+
+            }
+
+        }
+    };
+
+    request.onerror = () => {
+        console.log("error")
+    };
 }
+
+
+
+
+
+
+
+
+
