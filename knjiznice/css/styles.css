@@ -1,4 +1,4 @@
-.mapa{
+.mapa {
     margin: auto;
     width: 80%;
     height: 650px;
@@ -16,15 +16,15 @@
     font-weight: bold;
 }
 
-button{
+button {
     border-radius: 4px;
 }
 
-#beef,#chicken, #pork{
+#beef, #chicken, #pork {
     width: 100%;
 }
 
-ol{
+ol {
     padding-top: 12px;
     padding-bottom: 12px;
     background: rgb(245, 245, 245);

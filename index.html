@@ -1,209 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>eZdravje :: 4. DN :: OIS 2017/2018</title>
-  <link href="knjiznice/css/bootstrap.min.css" rel="stylesheet">
-  <link href="knjiznice/css/leaflet.css" rel="stylesheet">
-  <link href="knjiznice/css/leaflet-routing-machine.css" rel="stylesheet">
-  <link href="knjiznice/css/styles.css" rel="stylesheet">
-  <style>
-    body {padding-top: 70px;}
-  </style>
-  <script src="knjiznice/js/jquery-2.2.3.min.js"></script>
-  <script src="knjiznice/js/bootstrap.min.js"></script>
-  <script src="knjiznice/js/leaflet.js"></script>
-  <script src="knjiznice/js/leaflet-routing-machine.js"></script>
-  <script src="knjiznice/js/distance-util.js"></script>
-  <script src="knjiznice/js/koda.js"></script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <meta charset="utf-8">
+    <title>eZdravje :: 4. DN :: OIS 2017/2018</title>
+    <link href="knjiznice/css/bootstrap.min.css" rel="stylesheet">
+    <link href="knjiznice/css/leaflet.css" rel="stylesheet">
+    <link href="knjiznice/css/leaflet-routing-machine.css" rel="stylesheet">
+    <link href="knjiznice/css/styles.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 70px;
+        }
+    </style>
+    <script src="knjiznice/js/jquery-2.2.3.min.js"></script>
+    <script src="knjiznice/js/bootstrap.min.js"></script>
+    <script src="knjiznice/js/leaflet.js"></script>
+    <script src="knjiznice/js/leaflet-routing-machine.js"></script>
+    <script src="knjiznice/js/distance-util.js"></script>
+    <script src="knjiznice/js/koda.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
 
-  <!-- ZAČETEK: Menujska vrstica na vrhu spletne strani -->
-  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<!-- ZAČETEK: Menujska vrstica na vrhu spletne strani -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menujska-vrstica">
-          <span class="sr-only">Prikaži menu</span>
-          <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-        </button>
-        <!-- ZAČETEK: Ime vaše aplikacije -->
-        <a class="navbar-brand" href="index.html">eBMI
-        </a>
-        <!-- KONEC: Ime vaše aplikacije -->
-      </div>
-      <div class="collapse navbar-collapse" id="menujska-vrstica">
-        <ul class="nav navbar-nav">
-          <li><a href="opis.html">Opis ideje</a></li>
-          <li><a href="nacrt.html">Načrt informacijske rešitve</a></li>
-          <li><a href="bolnisnice.html">Bližnje bolnišnice</a></li>
-          <li><a href="#" id="generiranje">Generiranje podatkov</a></li>
-        </ul>
-      </div>
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menujska-vrstica">
+                <span class="sr-only">Prikaži menu</span>
+                <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+            </button>
+            <!-- ZAČETEK: Ime vaše aplikacije -->
+            <a class="navbar-brand" href="index.html">eBMI
+            </a>
+            <!-- KONEC: Ime vaše aplikacije -->
+        </div>
+        <div class="collapse navbar-collapse" id="menujska-vrstica">
+            <ul class="nav navbar-nav">
+                <li><a href="opis.html">Opis ideje</a></li>
+                <li><a href="nacrt.html">Načrt informacijske rešitve</a></li>
+                <li><a href="bolnisnice.html">Bližnje bolnišnice</a></li>
+                <li><a href="#" id="generiranje">Generiranje podatkov</a></li>
+            </ul>
+        </div>
     </div>
-  </nav>
-  <!-- KONEC: Menujska vrstica na vrhu spletne strani -->
+</nav>
+<!-- KONEC: Menujska vrstica na vrhu spletne strani -->
 
-  <!-- ZAČETEK: Vsebina aplikacije -->
-  <div class="container">
+<!-- ZAČETEK: Vsebina aplikacije -->
+<div class="container">
     <div class="col-lg-6 col-md-6 col-sm-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="row">
-            <div class="col-lg-8 col-md-8 col-sm-8"><b>Kreiraj EHR zapis</b> za novega pacienta</div>
-            <div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm" id="preberiPredlogoBolnika">
-              <option value=""></option>
-              <option value="Gabrijel Jurkovic">Gabrijel Jurkovic</option>
-              <option value="Don Vito Corleone">Don Vito Corleone</option>
-              <option value="Claudia Schiffer">Claudia Schiffer</option>
-            </select></div>
-          </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-lg-8 col-md-8 col-sm-8"><b>Kreiraj EHR zapis</b> za novega pacienta</div>
+                    <div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm"
+                                                                    id="preberiPredlogoBolnika">
+                        <option value=""></option>
+                        <option value="Gabrijel Jurkovic">Gabrijel Jurkovic</option>
+                        <option value="Don Vito Corleone">Don Vito Corleone</option>
+                        <option value="Claudia Schiffer">Claudia Schiffer</option>
+                    </select></div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <span class="label label-default">Ime</span><input id="kreirajIme" type="text"
+                                                                   class="form-control input-mini" placeholder="Janez">
+                <span class="label label-default">Priimek</span><input id="kreirajPriimek" type="text"
+                                                                       class="form-control" placeholder="Novak">
+                <span class="label label-default">Datum rojstva</span><input id="kreirajDatumRojstva" type="text"
+                                                                             class="form-control"
+                                                                             placeholder="1957-03-10T09:08">
+                <span class="label label-default">Telesna višina</span>
+                <div class="input-group"><input id="kreirajVisino" type="text" class="form-control input-mini"
+                                                placeholder="185"><span class="input-group-addon">cm</span></div>
+                <span class="label label-default">Telesna teža</span>
+                <div class="input-group"><input id="kreirajTezo" type="text" class="form-control input-mini"
+                                                placeholder="80.00"><span class="input-group-addon">kg</span></div>
+                <button type="button" class="btn btn-primary btn-xs" onclick="kreirajEHRzaBolnika()">Dodaj osnovne
+                    podatke o pacientu
+                </button>
+                <br><span id="kreirajSporocilo"></span>
+            </div>
         </div>
-        <div class="panel-body">
-          <span class="label label-default">Ime</span><input id="kreirajIme" type="text" class="form-control input-mini" placeholder="Janez">
-          <span class="label label-default">Priimek</span><input id="kreirajPriimek" type="text" class="form-control" placeholder="Novak">
-          <span class="label label-default">Datum rojstva</span><input id="kreirajDatumRojstva" type="text" class="form-control" placeholder="1957-03-10T09:08">
-          <span class="label label-default">Telesna višina</span><div class="input-group"><input id="kreirajVisino" type="text" class="form-control input-mini" placeholder="185"><span class="input-group-addon">cm</span></div>
-          <span class="label label-default">Telesna teža</span><div class="input-group"><input id="kreirajTezo" type="text" class="form-control input-mini" placeholder="80.00"><span class="input-group-addon">kg</span></div>
-           <button type="button" class="btn btn-primary btn-xs" onclick="kreirajEHRzaBolnika()">Dodaj osnovne podatke o pacientu</button><br><span id="kreirajSporocilo"></span>
-         </div>
-       </div>
-     </div>
+    </div>
 
-     <div class="col-lg-6 col-md-6 col-sm-6">
-       <div class="panel panel-default">
-         <div class="panel-heading">
-           <div class="row">
-             <div class="col-lg-8 col-md-8 col-sm-8"><b>Preberi BMI </b> obstoječega pacienta</div>
-             <div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm" id="preberiObstojeciEHR"><option value=""></option>
-               <option id="patient1" value="Gabrijel Jurkovic" ehrValue="">Gabrijel Jurkovic</option>
-               <option id="patient2" value="Don Vito Corleone" ehrValue="">Don Vito Corleone</option>
-               <option id="patient3" value="Claudia Schiffer" ehrValue="">Claudia Schiffer</option></select></div>
-           </div>
-         </div>
-         <div class="panel-body">
-           <span class="label label-default">EHR ID pacienta</span><input id="preberiEHRid" type="text" class="form-control input-mini" placeholder="7b661e12-3a98-21ad-c29e-2dc9f5a3d885">
-           <button type="button" class="btn btn-primary btn-xs" onclick="preberiEHRodBolnika()">Preveri informacije o pacientovem BMI</button>
-           <br><span id="preberiSporocilo"></span>
+    <div class="col-lg-6 col-md-6 col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-lg-8 col-md-8 col-sm-8"><b>Preberi BMI </b> obstoječega pacienta</div>
+                    <div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm"
+                                                                    id="preberiObstojeciEHR">
+                        <option value=""></option>
+                        <option id="patient1" value="Gabrijel Jurkovic" ehrValue="">Gabrijel Jurkovic</option>
+                        <option id="patient2" value="Don Vito Corleone" ehrValue="">Don Vito Corleone</option>
+                        <option id="patient3" value="Claudia Schiffer" ehrValue="">Claudia Schiffer</option>
+                    </select></div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <span class="label label-default">EHR ID pacienta</span><input id="preberiEHRid" type="text"
+                                                                               class="form-control input-mini"
+                                                                               placeholder="7b661e12-3a98-21ad-c29e-2dc9f5a3d885">
+                <button type="button" class="btn btn-primary btn-xs" onclick="preberiEHRodBolnika()">Preveri informacije
+                    o pacientovem BMI
+                </button>
+                <br><span id="preberiSporocilo"></span>
+            </div>
         </div>
-      </div>
     </div>
 
     <div id="diagram-container" class="col-lg-9 col-md-9 col-sm-9">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12"><b>BMI</b> globalna porazdelitev</div>
-          </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12"><b>BMI</b> globalna porazdelitev</div>
+                </div>
+            </div>
+            <div>
+                <div id="diagram"></div>
+            </div>
         </div>
-        <div>
-          <div id="diagram" ></div>
-        </div>
-      </div>
     </div>
-
 
 
     <div id="diagram-legenda" class="col-lg-3 col-md-3 col-sm-3">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12"><b>Legenda</b></div>
-          </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12"><b>Legenda</b></div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <svg width="20" height="20">
+                    <rect width="20" height="20" style="fill: rgb(247, 144, 9)"/>
+                </svg>
+                <b> - vaš BMI </b><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(v tem stolpcu se nahajate vi)
+                <hr>
+                <svg width="20" height="20">
+                    <rect width="20" height="20" style="fill: #6BB9F0;"/>
+                </svg>
+                <b> - močna podhranjenost </b><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 15 in 16)<br>
+                <svg width="20" height="20">
+                    <rect width="20" height="20" style="fill: #22A7F0;"/>
+                </svg>
+                <b> - podhranjenost </b><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 17 in 18)<br>
+                <svg width="20" height="20">
+                    <rect width="20" height="20" style="fill: #2ECC71;"/>
+                </svg>
+                <b> - normalna teža </b><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 19 in 25)<br>
+                <svg width="20" height="20">
+                    <rect width="20" height="20" style="fill: #2574A9;"/>
+                </svg>
+                <b> - prevelika teža </b><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 26 in 30)<br>
+                <svg width="20" height="20">
+                    <rect width="20" height="20" style="fill: rgb(52, 93, 135)"/>
+                </svg>
+                <b> - debelost 1. stopnje </b><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 31 in 36)<br>
+                <svg width="20" height="20">
+                    <rect width="20" height="20" style="fill: rgb(44, 62, 80)"/>
+                </svg>
+                <b> - debelost 2. stopnje </b><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 37 in 40)<br>
+                <svg width="20" height="20">
+                    <rect width="20" height="20" style="fill: rgb(25, 37, 48)"/>
+                </svg>
+                <b> - debelost 3. stopnje </b><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI nad 40)
+            </div>
         </div>
-        <div class="panel-body">
-          <svg width="20" height="20">
-            <rect width="20" height="20" style="fill: rgb(247, 144, 9)" />
-          </svg><b> - vaš BMI </b><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(v tem stolpcu se nahajate vi)<hr>
-          <svg width="20" height="20">
-            <rect width="20" height="20" style="fill: #6BB9F0;" />
-          </svg><b> - močna podhranjenost </b><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 15 in 16)<br>
-          <svg width="20" height="20">
-            <rect width="20" height="20" style="fill: #22A7F0;" />
-          </svg><b> - podhranjenost </b><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 17 in 18)<br>
-          <svg width="20" height="20">
-            <rect width="20" height="20" style="fill: #2ECC71;" />
-          </svg><b> - normalna teža </b><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 19 in 25)<br>
-          <svg width="20" height="20">
-            <rect width="20" height="20" style="fill: #2574A9;" />
-          </svg><b> - prevelika teža </b><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 26 in 30)<br>
-          <svg width="20" height="20">
-            <rect width="20" height="20" style="fill: rgb(52, 93, 135)" />
-          </svg><b> - debelost 1. stopnje </b><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 31 in 36)<br>
-          <svg width="20" height="20">
-            <rect width="20" height="20" style="fill: rgb(44, 62, 80)" />
-          </svg><b> - debelost 2. stopnje </b><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 37 in 40)<br>
-          <svg width="20" height="20">
-            <rect width="20" height="20" style="fill: rgb(25, 37, 48)" />
-          </svg><b> - debelost 3. stopnje </b><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI nad 40)
-        </div>
-      </div>
     </div>
-
 
 
     <div id="prehrana" class="col-lg-9 col-md-9 col-sm-9">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12"><b>Priporočeni recepti za vaš BMI</b></div>
-          </div>
-        </div>
-        <div class="panel-body">
-
-
-          <b>Tipi hrane</b>, razvrščeni od <b>največje</b> do <b>najmanjše</b> priporočene pogostosti uživanja. Ob kliku na tip hrane se prikaže drug stolpec, v katerem so našteti nekateri <b>primeri</b> izbranega tipa.<hr>
-
-
-
-            <!-- This is the HTML section for the "Details" markup ...
-                 NOTE: it is hidden initially !!   -->
-
-            <div class="row" style="padding: 5px" id="chars">
-              <div class="col-sm-4">
-                <button id="chicken">Piščančije jedi</button>
-                <ol style="visibility: hidden" id="listaPiletina">
-
-                </ol>
-              </div>
-
-              <div class="col-sm-4">
-                <button id="pork">Jedi od svinjine</button>
-                <ol style="visibility: hidden" id="listaSvinjina">
-
-                </ol>
-              </div>
-
-              <div class="col-sm-4">
-                <button id="beef">Goveje jedi</button>
-                <ol style="visibility: hidden" id="listaGoveje">
-
-                </ol>
-              </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12"><b>Priporočeni recepti za vaš BMI</b></div>
+                </div>
             </div>
+            <div class="panel-body">
 
 
+                <b>Tipi hrane</b>, razvrščeni od <b>največje</b> do <b>najmanjše</b> priporočene pogostosti uživanja. Ob
+                kliku na tip hrane se prikaže drug stolpec, v katerem so našteti nekateri <b>primeri</b> izbranega tipa.
+                <hr>
 
 
+                <!-- This is the HTML section for the "Details" markup ...
+                     NOTE: it is hidden initially !!   -->
+
+                <div class="row" style="padding: 5px" id="chars">
+                    <div class="col-sm-4">
+                        <button id="chicken">Piščančije jedi</button>
+                        <ol style="visibility: hidden" id="listaPiletina">
+
+                        </ol>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <button id="pork">Jedi od svinjine</button>
+                        <ol style="visibility: hidden" id="listaSvinjina">
+
+                        </ol>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <button id="beef">Goveje jedi</button>
+                        <ol style="visibility: hidden" id="listaGoveje">
+
+                        </ol>
+                    </div>
+                </div>
 
 
+            </div>
         </div>
-      </div>
     </div>
 
 
-
-  </div>
-  <!-- KONEC: Vsebina aplikacije -->
+</div>
+<!-- KONEC: Vsebina aplikacije -->
 
 </body>
 </html>
