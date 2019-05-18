@@ -5,7 +5,7 @@ var queryUrl = baseUrl + '/query';
 var username = "ois.seminar";
 var password = "ois4fri";
 var patitentBMI=null;
-var ikona ="https://img.icons8.com/color/48/000000/marker.png";
+
 /**
  * Generiranje niza za avtorizacijo na podlagi uporabniškega imena in gesla,
  * ki je šifriran v niz oblike Base64
@@ -439,7 +439,169 @@ function preberiEHRodBolnika() {
   }
 }
 
+function narisiGraf(bmi){
+    var layout = {
+        xaxis: {
+            title: 'BMI',
+            size: 14
+        },
+        yaxis:{
+            title: 'Pogostost (%)',
+            size: 14
+        }
+    };
+    var data = [{
+        x: [15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],
+        y: [0.1 ,0.2,0.55,1.7,2.8,4.3,6.1,7,7.8,8.45,10,
+            6.3,7.5,6.3,4.5,3.5,3.6,3.45,2.5,2.3,1.75,1.85,
+            1.4,1.2,0.9,0.8,0.7,0.6,0.5,0.6,0.2,0.5,0.2,0.5,0.1,0.05],
+        marker: {
+            color: ['rgb(107, 185, 240)','rgb(107, 185, 240)',
+                'rgb(34, 167, 240)','rgb(34, 167, 240)',
+                'rgb(46, 204, 113)','rgb(46, 204, 113)','rgb(46, 204, 113)','rgb(46, 204, 113)','rgb(46, 204, 113)','rgb(46, 204, 113)','rgb(46, 204, 113)',
+                'rgb(37, 116, 169)','rgb(37, 116, 169)','rgb(37, 116, 169)','rgb(37, 116, 169)','rgb(37, 116, 169)',
+                'rgb(52, 93, 135)','rgb(52, 93, 135)','rgb(52, 93, 135)','rgb(52, 93, 135)','rgb(52, 93, 135)','rgb(52, 93, 135)',
+                'rgb(44, 62, 80)','rgb(44, 62, 80)','rgb(44, 62, 80)','rgb(44, 62, 80)',
+                'rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)']
+        },
+        type: 'bar'
+    }];
 
+    data[0].marker.color[Math.round(bmi)-15]='rgb(247, 144, 9)';
+    Plotly.newPlot('diagram', data, layout, {showSendToCloud:true});
+}
+//end of bar chart
+
+function prikaziMapo(positionInfo) {
+    var mapa;
+    var mapOptions = {
+        center: positionInfo,
+        zoom: 13
+    };
+    mapa = L.map('mapa_id', mapOptions);
+    var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    mapa.addLayer(layer);
+
+    var ikona = L.icon({
+        iconUrl: 'https://img.icons8.com/color/48/000000/marker.png',
+        iconSize: [38, 45], // size of the icon
+    });
+
+    function obKlikuNaMapo(e){
+        var latlng= e.latlng;
+        console.log(latlng)
+        mapa.eachLayer(function (layer) {
+            mapa.removeLayer(layer);
+        });
+        //mapa = L.map('mapa_id', mapOptions);
+        var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        mapa.addLayer(layer);
+
+        var marker = L.marker([latlng.lat,latlng.lng], {icon: ikona}).addTo(mapa);
+
+        const request = new XMLHttpRequest();
+        request.open('GET', 'https://teaching.lavbic.net/cdn/OIS/DN3/bolnisnice.json');
+        request.send();
+        request.onload = () => {
+            if (request.status === 200) {
+                var bolnice = JSON.parse(request.response).features;
+                for (var i = 0; i < bolnice.length; i++) {
+
+                    if (bolnice[i].geometry.type == "Polygon") {
+                        var name = bolnice[i].properties.name;
+                        if (name == null) {
+                            name = "Ni podatkov";
+                        }
+
+                        if (bolnice[i].properties.hasOwnProperty("addr:street")) {
+                            var addres = bolnice[i].properties["addr:street"];
+                            var addresNum = bolnice[i].properties["addr:housenumber"];
+                        } else {
+                            var addres = "Ni podatkov";
+                            var addresNum = "";
+                        }
+
+                        for (var j = 0; j < bolnice[i].geometry.coordinates[0].length; j++) {
+                            bolnice[i].geometry.coordinates[0][j].reverse();
+                            // console.log(bolnice[i].geometry.coordinates[0][j][0])
+
+                        }
+
+                        var polygon = L.polygon(bolnice[i].geometry.coordinates, {color: 'blue'}).bindPopup("<b>Ime:</b> " + name + "<br><b>Naslov:</b> " + addres + " " + addresNum);
+
+                        for (var j=0;j<bolnice[i].geometry.coordinates[0].length;j++) {
+                            if (distance(bolnice[i].geometry.coordinates[0][j][0], bolnice[i].geometry.coordinates[0][j][1], latlng.lat, latlng.lng) <= 2) {
+                                polygon.options.color = "green";
+                                polygon.addTo(mapa);
+                            } else {
+                                polygon.options.color="blue";
+                                polygon.addTo(mapa);
+                            }
+                        }
+
+                    }
+
+                }
+
+
+            }
+        };
+
+        request.onerror = () => {
+            console.log("error")
+        };
+
+    }
+
+    mapa.on('click',obKlikuNaMapo);
+
+    // create marker object, pass custom icon as option, add to map
+    var marker = L.marker([positionInfo.lat,positionInfo.lng], {icon: ikona}).addTo(mapa);
+
+
+    //podatci o bolnicama
+    const request = new XMLHttpRequest();
+    request.open('GET', 'https://teaching.lavbic.net/cdn/OIS/DN3/bolnisnice.json');
+    request.send();
+    request.onload = () => {
+        if (request.status === 200) {
+            var bolnice = JSON.parse(request.response).features;
+            for (var i = 0; i < bolnice.length; i++) {
+
+                if (bolnice[i].geometry.type == "Polygon") {
+                    var name = bolnice[i].properties.name;
+                    if (name == null) {
+                        name = "Ni podatkov";
+                    }
+
+                    if (bolnice[i].properties.hasOwnProperty("addr:street")) {
+                        var addres = bolnice[i].properties["addr:street"];
+                        var addresNum = bolnice[i].properties["addr:housenumber"];
+                    } else {
+                        var addres = "Ni podatkov";
+                        var addresNum = "";
+                    }
+
+                    for (var j = 0; j < bolnice[i].geometry.coordinates[0].length; j++) {
+                        bolnice[i].geometry.coordinates[0][j].reverse();
+                        // console.log(bolnice[i].geometry.coordinates[0][j][0])
+
+                    }
+
+                    var polygon = L.polygon(bolnice[i].geometry.coordinates, {color: 'blue'}).bindPopup("<b>Ime:</b> " + name + "<br><b>Naslov:</b> " + addres + " " + addresNum);
+                    polygon.addTo(mapa);
+                }
+
+            }
+
+
+        }
+    };
+
+     request.onerror = () => {
+        console.log("error")
+    };
+}
 
 
 window.addEventListener("load", function () {
@@ -496,10 +658,8 @@ window.addEventListener("load", function () {
        }
     });
 
-    console.log(window.location.pathname)
-
     //for distribution
-   if(window.location.pathname==="/bolnisnice.html"){
+   /*if(window.location.pathname==="/bolnisnice.html"){
         navigator.geolocation.getCurrentPosition(function(location) {
             var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
             prikaziMapo(latlng);
@@ -508,10 +668,10 @@ window.addEventListener("load", function () {
     else if(window.location.pathname==="/" || window.location.pathname==="/index.html"){
         console.log("radi")
         narisiGraf(patitentBMI);
-    }
+    }*/
 
     // for development
-   /*if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
+   if(window.location.pathname==="/gabrijel98.bitbucket.org/bolnisnice.html"){
         navigator.geolocation.getCurrentPosition(function(location) {
             var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
             prikaziMapo(latlng);
@@ -519,7 +679,7 @@ window.addEventListener("load", function () {
     }
     else if(window.location.pathname==="/gabrijel98.bitbucket.org/index.html"){
         narisiGraf(patitentBMI);
-    }*/
+    }
 
 
     $("#chicken").click(function () {
@@ -541,110 +701,6 @@ window.addEventListener("load", function () {
 });
 
 
-//create bar chart
-function narisiGraf(bmi){
-  var layout = {
-    xaxis: {
-      title: 'BMI',
-      size: 14
-    },
-    yaxis:{
-      title: 'Pogostost (%)',
-      size: 14
-    }
-  };
-  var data = [{
-    x: [15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],
-    y: [0.1 ,0.2,0.55,1.7,2.8,4.3,6.1,7,7.8,8.45,10,
-      6.3,7.5,6.3,4.5,3.5,3.6,3.45,2.5,2.3,1.75,1.85,
-      1.4,1.2,0.9,0.8,0.7,0.6,0.5,0.6,0.2,0.5,0.2,0.5,0.1,0.05],
-    marker: {
-      color: ['rgb(107, 185, 240)','rgb(107, 185, 240)',
-        'rgb(34, 167, 240)','rgb(34, 167, 240)',
-        'rgb(46, 204, 113)','rgb(46, 204, 113)','rgb(46, 204, 113)','rgb(46, 204, 113)','rgb(46, 204, 113)','rgb(46, 204, 113)','rgb(46, 204, 113)',
-        'rgb(37, 116, 169)','rgb(37, 116, 169)','rgb(37, 116, 169)','rgb(37, 116, 169)','rgb(37, 116, 169)',
-        'rgb(52, 93, 135)','rgb(52, 93, 135)','rgb(52, 93, 135)','rgb(52, 93, 135)','rgb(52, 93, 135)','rgb(52, 93, 135)',
-        'rgb(44, 62, 80)','rgb(44, 62, 80)','rgb(44, 62, 80)','rgb(44, 62, 80)',
-        'rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)','rgb(25, 37, 48)']
-    },
-    type: 'bar'
-  }];
-
-  data[0].marker.color[Math.round(bmi)-15]='rgb(247, 144, 9)';
-  Plotly.newPlot('diagram', data, layout, {showSendToCloud:true});
-}
-//end of bar chart
-
-function prikaziMapo(positionInfo) {
-    var mapa;
-    var mapOptions = {
-        center: positionInfo,
-        zoom: 13
-    };
-    mapa = L.map('mapa_id', mapOptions);
-    var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-    mapa.addLayer(layer);
-
-    var ikona = L.icon({
-        iconUrl: 'https://img.icons8.com/color/48/000000/marker.png',
-        iconSize: [38, 45], // size of the icon
-    });
-
-    // create marker object, pass custom icon as option, add to map
-    var marker = L.marker([positionInfo.lat,positionInfo.lng], {icon: ikona}).addTo(mapa);
-
-    //podatci o bolnicama
-    const request = new XMLHttpRequest();
-    request.open('GET', 'https://teaching.lavbic.net/cdn/OIS/DN3/bolnisnice.json');
-    request.send();
-    request.onload = () => {
-        if (request.status === 200) {
-            var bolnice = JSON.parse(request.response).features;
-            for (var i = 0; i < bolnice.length; i++) {
-
-                if (bolnice[i].geometry.type == "Polygon") {
-                    var name = bolnice[i].properties.name;
-                    if (name == null) {
-                        name = "Ni podatkov";
-                    }
-
-                    if (bolnice[i].properties.hasOwnProperty("addr:street")) {
-                        var addres = bolnice[i].properties["addr:street"];
-                        var addresNum = bolnice[i].properties["addr:housenumber"];
-                    } else {
-                        var addres = "Ni podatkov";
-                        var addresNum = "";
-                    }
-
-                    for (var j = 0; j < bolnice[i].geometry.coordinates[0].length; j++) {
-                        bolnice[i].geometry.coordinates[0][j].reverse();
-                       // console.log(bolnice[i].geometry.coordinates[0][j][0])
-
-                    }
-
-                    var polygon = L.polygon(bolnice[i].geometry.coordinates, {color: 'blue'}).bindPopup("<b>Ime:</b> " + name + "<br><b>Naslov:</b> " + addres + " " + addresNum);
-
-                    for (var j=0;j<bolnice[i].geometry.coordinates[0].length;j++) {
-                        if (distance(bolnice[i].geometry.coordinates[0][j][0], bolnice[i].geometry.coordinates[0][j][1], positionInfo.lat, positionInfo.lng) <= 2) {
-                            polygon.options.color = "green";
-                            polygon.addTo(mapa);
-                        } else {
-                            polygon.options.color="blue";
-                            polygon.addTo(mapa);
-                        }
-                    }
-
-                }
-
-            }
-
-        }
-    };
-
-    request.onerror = () => {
-        console.log("error")
-    };
-}
 
 
 
